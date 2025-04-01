@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor PDF para Texto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 30px;
+        }
+        #textResult {
+            white-space: pre-wrap;
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        #imagePreview img {
+            max-width: 100%;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+        }
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+        .error {
+            color: red;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Corretor de Redação</h1>
+    <p>Envie um arquivo<strong>(digitado)</strong> PDF ou imagem para extrair o texto</p>
+    <br>
+    
+    
+    <div class="upload-area">
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg">
+            <br><br>
+            <button type="submit">Processar Arquivo</button>
+        </form>
+    </div>
+    
+    <div class="loading" id="loading">
+        Processando... Por favor aguarde.
+    </div>
+    
+    <div class="error" id="error"></div>
+    
+    <div id="result">
+        <h2>Resultado:</h2>
+        <div id="textResult">Nenhum arquivo processado ainda.</div>
+        <div id="imagePreview"></div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('fileInput');
+            const loading = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+            const resultDiv = document.getElementById('result');
+            
+            if (!fileInput.files.length) {
+                errorDiv.textContent = 'Por favor, selecione um arquivo';
+                return;
+            }
+            
+            // Mostrar loading e esconder erros anteriores
+            loading.style.display = 'block';
+            errorDiv.textContent = '';
+            resultDiv.style.display = 'none';
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.error || 'Erro desconhecido');
+                }
+                
+                // Mostrar resultados
+                document.getElementById('textResult').textContent = data.text || "Nenhum texto foi reconhecido.";
+                
+                // Mostrar imagem se existir
+                const imagePreview = document.getElementById('imagePreview');
+                imagePreview.innerHTML = '';
+                if (data.image) {
+                    const img = document.createElement('img');
+                    img.src = `/static/uploads/${data.image}`;
+                    img.alt = 'Imagem processada';
+                    imagePreview.appendChild(img);
+                }
+                
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                errorDiv.textContent = error.message;
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
