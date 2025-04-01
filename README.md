@@ -2,7 +2,7 @@
 
 (Opcional) Crie um ambiente virtual Python nesta pasta
 
-Primeiramente, renomeie o arquivo .env.example para apenas .env e preencha a chave de API OpenAI (Perguntar ao indígena).
+Primeiramente, renomeie o arquivo .env.example para apenas .env e preencha a chave de API OpenAI (Perguntar ao Alexandre).
 
 Installe as dependências com:
 `pip install -r requirements.txt`

@@ -25,7 +25,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
 
 # Configuração do Tesseract (ajuste para seu sistema)
-# NOTA DO INDÍGENA: Se você usa Windows descomente a próxima linha
+# NOTA: Se você usa Windows descomente a próxima linha e coloque o caminho apropriado
 # pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\teste'
 
 def allowed_file(filename):
