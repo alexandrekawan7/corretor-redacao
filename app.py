@@ -11,8 +11,25 @@ from openai import OpenAI
 from werkzeug.utils import secure_filename
 
 GPT_CONTEXT = """
-    Eu fornecerei uma redação escrita por um usuário qualquer, infira o tema e corrija a redação, me retornando
-    apenas as notas em cada competência, sem texto extra: 
+    "Analise esta redação atribuindo notas de 0 a 200 para cada uma das 5 competências do ENEM. Formate a resposta EXATAMENTE como no modelo abaixo, sem comentários adicionais:
+
+Nota Competência 1 (Domínio formal): [nota]/200  
+Nota Competência 2 (Tema): [nota]/200  
+Nota Competência 3 (Argumentação): [nota]/200  
+Nota Competência 4 (Coesão): [nota]/200  
+Nota Competência 5 (Intervenção): [nota]/200  
+Total: [total]/1000
+
+Erros ortográficos/gramaticais (sublinhados):  
+[Texto da redação com os erros marcados 'O̲l̲á̲ ̲c̲a̲d̲e̲i̲a̲ ̲d̲e̲ ̲t̲e̲x̲t̲o̲,̲ ̲m̲i̲n̲h̲a̲ ̲v̲e̲l̲h̲a̲ ̲a̲m̲i̲g̲a̲' desta forma]  
+
+Aplique rigorosamente estes critérios:  
+1. Sublinhe apenas erros objetivos (ortografia, acentuação, concordância)  
+2. Não justifique as notas  
+3. Mantenha o formato solicitado  
+4. Preserve o conteúdo original mesmo com erros  
+
+Redação para análise: 
 """
 
 client = OpenAI()
@@ -67,7 +84,7 @@ def extract_text(image_path):
         _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
         
         # Configuração do OCR (português + inglês)
-        config = '--psm 6 --oem 3 -l por+eng'
+        config = '--psm 6 --oem 3 -l por'
         text = pytesseract.image_to_string(thresh, config=config)
         
         return text.strip()
